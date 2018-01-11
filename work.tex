@@ -1,0 +1,218 @@
+\documentclass[aspectratio=43]{beamer}
+\usetheme{Boadilla}
+%\usepackage{slashbox}
+%\usepackage{hanging}
+%\usepackage{algorithm,algorithmic}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{fancybox}
+\usepackage{mathrsfs}
+\usepackage{makecell}
+\usepackage{listings}
+%\usepackage[rightcaption]{sidecap}
+%\usepackage{enumitem}
+% set first line indentation
+\parindent=20pt
+\setbeamersize{text margin left=20pt,text margin right=20pt}
+
+\logo {\includegraphics[height=0.8cm]{./Fig/hitlogo.eps}}
+% items enclosed in square brackets are optional; explanation below
+\title[PS decomposition]{Space-domain stationary filters for PS decomposition in isotropic media}
+%\subtitle[subs]{Parallelization with domain decomposition}
+\author[W. Wang]{Wenlong Wang \inst{1}}
+\titlegraphic{\includegraphics[height=0.8cm]{./Fig/hitlogo.eps}}
+
+\institute[HIT]{\inst{1} Harbin Institute of Technology}
+\date[Dec 2017]{Dec, 2017}
+
+\begin{document}
+
+% remove figure caption
+\setbeamertemplate{caption}{\insertcaption}
+
+
+%--- the titlepage frame -------------------------%
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+%\tableofcontents[part=1,pausesections]
+\end{frame}
+%-----------------------------------------------------------
+\section{Motivations}
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+\begin{frame}
+  \frametitle{Motivations}
+\begin{itemize}
+\item{P and S wavefields separation/decomposition is essential for generating PP and PS images in elastic RTMs.}
+\item{Classical divergence and curl operators cause phase and amplitude change after PS separation.}
+\item{Wavenumber domain methods are difficult to implement with parallel computation because of large scale Fourier transforms.}
+\item{Decoupled equation method causes artifacts at reflection interfaces.}
+\end{itemize}
+\end{frame}
+%-----------------------------------------------------------
+\section{Previous work}
+\begin{frame}
+  \frametitle{Previous work}
+\tiny{
+\begin{itemize}
+\item{Dellinger and Etgen (1990) propose divergence-like and curl-like operators in the wavenumber domain based on Christoffel equation to perform separation in anisotropic homogeneous elastic media.}
+\item{Ma and Zhu (2003) solve the decoupled elastic wave equations for decomposed P and S waves with pseudospectrum formulation.}
+\item{Yan and Sava (2008) transform the wavenumber domain separation operator from the wavenumber domain to the space domain, and formulate nonstationary filter to separate HTI wavefields.}
+\item{Zhang and McMechan (2010) realize the PS decomposition by generalizing Dellinger and Etgen's (1990) theory and applied to VTI wavefields.}
+\item{Cheng and Fomel (2014) use a low-rank approximation to build space-wavenumber mixed-domain operators and significantly reduce the number of FFT operations per time step.}
+\item{Wang et al. (2015) use decoupled equation to build PP and PS images with vector-based image condition.} 
+\item{Wang et al. (2017) propose localized a localized low-rank approximation to improve efficiency and accuracy for PS decompositions in anisotropic media.}  
+\end{itemize}
+}
+\end{frame}
+%-----------------------------------------------------------
+\begin{frame}{The idea}
+We formulate stationary filters to decompose isotropic P and S waves in the space domain, which don't require Fourier transforms or decoupled elastic equations.
+\end{frame}
+%%-----------------------------------------------------------
+\section{Methodology}
+\begin{frame}{Methodology}
+
+\begin{columns}
+  \begin{column}{0.50\textwidth}
+
+\begin{block}{Separation (space)}
+\begin{equation}
+\begin{aligned}
+P&=\bigtriangledown \cdot \boldsymbol{U} \\
+\boldsymbol{S}&=\bigtriangledown \times \boldsymbol{U}
+\end{aligned}
+\end{equation}
+\end{block}
+
+\begin{block}{Separation (wavenumber)}
+\begin{equation}
+\begin{aligned}
+\tilde{P}&=i\mathrm{\boldsymbol{k}} \cdot \boldsymbol{\tilde{U}} \\
+\boldsymbol{\tilde{S}}&=i \mathrm{\boldsymbol{k}} \times \boldsymbol{\tilde{U}}
+\end{aligned}
+\end{equation}
+\end{block}
+\end{column}
+
+
+\begin{column}{0.50\textwidth}
+
+\begin{block}{Decomposition (space)}
+\begin{equation}
+\begin{aligned}
+\boldsymbol{P}&=\textcolor{red}{L_P} (\boldsymbol{U}) \\
+\boldsymbol{S}&= \textcolor{red}{L_S} (\boldsymbol{U})
+\end{aligned}
+\end{equation}
+\end{block}
+
+\begin{block}{Decomposition (wavenumber)}
+\begin{equation}
+\begin{aligned}
+\boldsymbol{\tilde{P}}&=\mathrm{\bar{\boldsymbol{k}}} (\mathrm{\bar{\boldsymbol{k}}} \cdot \boldsymbol{\tilde{U}}) \\
+\boldsymbol{\tilde{S}}&= \mathrm{\bar{\boldsymbol{k}}} \times (\mathrm{\bar{\boldsymbol{k}}} \times \boldsymbol{\tilde{U}})
+\end{aligned}
+\end{equation}
+\end{block}
+\end{column}
+\end{columns}
+\noindent{where a \textasciitilde represents data in the wavenumber domain, and a bar overhead means normalization.}
+\end{frame}
+%-----------------------------------------------------------
+\begin{frame}{Methodology}
+Only one of the spatial operators $\textcolor{red}{L_P}$ and $\textcolor{red}{L_S}$ needs to be calculated, as the other wavemode can be obtained by subtracting the (filteried) decomposed waves from the coupled waves component by component,
+\begin{equation}
+\boldsymbol{U}=\boldsymbol{P}+\boldsymbol{S}.
+\end{equation}
+\end{frame}
+%-----------------------------------------------------------
+\begin{frame}{Methodology}
+The explicit expression for 2D isotropic P-wave decomposition in the wavenumber domain is (Zhang and McMechan, 2010)
+\begin{equation}
+\begin{aligned}
+\tilde{U^P_x}&=\bar{k}^2_x \tilde{U_x} + \bar{k}_x\bar{k}_z\tilde{U_z}, \\
+\tilde{U^P_z}&=\bar{k}^2_z \tilde{U_z} + \bar{k}_z\bar{k}_x\tilde{U_x}.
+\end{aligned}
+\end{equation}
+
+To obtain the stationary filters for PS decomposition in the space domain, the wavenumber domain operators $\bar{k}^2_x$, $\bar{k}^2_z$ and $\bar{k}_x\bar{k}_z$ are transferred to the space domain by inverse FFTs to form spatial filters $L_x$, $L_z$ and $L_{xz}$, respectively.
+\begin{equation}
+\begin{aligned}
+U^P_x&=L_x[U_x] + L_{xz}[U_z], \\
+U^P_z&=L_z[U_z] + L_{xz}[U_x],
+\end{aligned}
+\end{equation}
+and are plotted in the following slice...
+\end{frame}
+ 
+%%-----------------------------------------------------------
+\begin{frame}{Filters}
+   \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{./Fig/filter.eps}
+    \end{figure}
+\end{frame}
+%%-----------------------------------------------------------
+\begin{frame}{Decomposition results (stationary filter)}
+   \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{./Fig/snap_filter.eps}
+    \end{figure}
+\end{frame}
+%%-----------------------------------------------------------
+\begin{frame}{Decomposition results (decoupled equation)}
+   \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{./Fig/snap_dp.eps}
+    \end{figure}
+\end{frame}
+%%-----------------------------------------------------------
+\begin{frame}{Decomposition results (wavenumber domain)}
+   \begin{figure}[ht]
+            \centering
+            \includegraphics[width=\textwidth]{./Fig/snap_fft.eps}
+    \end{figure}
+\end{frame}
+%%-----------------------------------------------------------
+\begin{frame}{Computation cost}
+\begin{table}[]
+\centering
+\label{my-label}
+\begin{tabular}{|l|l|}
+\hline
+Methods                                                                    & Time (s/decomposition) \\ \hline
+Stationary filter                                                          & 2.62                   \\ \hline
+Decoupled equation                                                         & 0.046                  \\ \hline
+\begin{tabular}[c]{@{}l@{}}Wavenumber domain\\  decomposition\end{tabular} & 0.22                   \\ \hline
+\end{tabular}
+\end{table}
+
+\end{frame}
+%%-----------------------------------------------------------
+\section{Discussions}
+\begin{frame}{Discussions}
+\begin{itemize}
+\item{The proposed spatial stationary filter gives acceptable PS decomposition results.}
+\item{The computational cost for stationary filter is proportional to the size of filter. In this test we use a uniform size of 21 by 21.}
+\item{The stationary filter is slower than decoupled equation and wavenumber domain decomposition methods for sequential computations.}
+\item{The stationary filter gives more reliable decomposition results at model discontinuities (interfaces), as the latter generate serious artifacts.}
+\item{The stationary filter is easier to implement for parallel computation than wavenumber domain decompositions, in which FFTs are performed.}
+\end{itemize}
+\end{frame}
+%%%-----------------------------------------------------------
+%\begin{frame}
+%\begin{center}
+%  \includegraphics[width=1.0\textwidth]{./Fig/Thankyou.eps}
+%\end{center}
+%\end{frame}
+
+\end{document}
+
