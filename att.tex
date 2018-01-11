@@ -87,8 +87,27 @@ It's interesting to see that all the PS vector decomposition algorithms are perf
 %the relation between our image condition and dot product image condition is discussed. 
 %The proposed 3D ERTM procedure is successfully tested on a single-layer model and a portion of the SEG/EAGE Overthrust model \citep{aminzadeh94}. 
 \section{Methodology}
+We follow the procedure introduced by \citet{zhang10}, we first derive the equations for PS vector decomposition in the wavenumber domain. From the Helmholtz decomposition theory, an elasitc vector wavefield $\boldsymbol{U}$ can be decomposed into a curl-free P-wave ($\boldsymbol{U}^P$) and a divergence-free S-wave ($\boldsymbol{U}^S$) \citep{aki80}:
+\begin{equation}
+\boldsymbol{U} = \boldsymbol{U}^P + \boldsymbol{U}^S,
+\label{eqn:helmholtz}
+\end{equation}
+with 
+\begin{equation}
+\bigtriangledown \times \boldsymbol{U}^P = \boldsymbol{0},
+\end{equation}
+and
+\begin{equation}
+\bigtriangledown \cdot \boldsymbol{U}^S = 0.
+\end{equation}
+In the wavenumber domain, equation~\ref{eqn:helmholtz} became
+\begin{equation}
+\tilde{\boldsymbol{U}} = \tilde{\boldsymbol{U}}^P + \tilde{\boldsymbol{U}}^S,
+\label{eqn:helmholtz2}
+\end{equation}
 
-The procedure of 3D vector-based source-normalized crosscorrelation ERTM is similar to that of the 2D vector-based excitation amplitude image condition \citep{wenlong_vct15}. In ERTMs, the source wavefield is extrapolated before the receiver wavefield extrapolation. Both elastic wavefield extrapolations involve P- and S-wavefield decompositions. The decomposed P- and S-wave particle-velocities and stresses are used to obtain their propagation directions and reflection polarities. 
+
+%The procedure of 3D vector-based source-normalized crosscorrelation ERTM is similar to that of the 2D vector-based excitation amplitude image condition \citep{wenlong_vct15}. In ERTMs, the source wavefield is extrapolated before the receiver wavefield extrapolation. Both elastic wavefield extrapolations involve P- and S-wavefield decompositions. The decomposed P- and S-wave particle-velocities and stresses are used to obtain their propagation directions and reflection polarities. 
 %Due to the different polarizations of PP and PS reflections, their image conditions are also different. 
 In the following subsections, the procedures are explained and illustrated in detail.
 
