@@ -75,7 +75,7 @@ Another category is the wave equations based solutions \citep{chang86,chang94,wh
 However, P- and S-waves are coupled in the elastic wavefield. Failure to separate the P- and S-waves leads to crosstalk artifacts in the migrated images \citep{yan08}. Thus the quality of PS separation has directly influence on the final images. 
 
 %\citet{sun01} separate multicomponent data near the surface and use acoustic equations for separate PP and PS migrations. \citet{yan08} propose to use elastic wave equations for both source and receiver extrapolations and separate the P- and S-waves by divergence and curl operators before applying the image condition. 
-The pervasively applied PS separation method is the divergence and curl operators, which are based on Helmholtz decomposition \citep{aki80} and are highly efficienty. However, as pointed out by \citet{sun01}, the phase and amplitude of the separated P- and S-wave are changed by the divergence and curl operators, causing problems for true amplitude imaging and interpretations.
+The pervasively applied PS separation method is the divergence and curl operators, which are based on Helmholtz decomposition \citep{aki80} and is highly efficient. However, as pointed out by \citet{sun01}, the phase and amplitude of the separated P- and S-wave are changed by the divergence and curl operators, causing problems for true amplitude imaging and interpretations.
 \citet{zhang10} propose to decompose the wavefield into P- and S-wave vectors to preserve their original amplitudes and phases, and call it wavefield decomposition to be differentiated from wavefield separation algorithms which involve divergence and curl and similar operators. 
 
 \citet{zhang10} project wavefields to P- and S-polarization directions. \citet{zhu17} decompose the wavefields by solving a Posson's equation. Both methods need Fourier transform and operate in the wavenumber domain. From another perspective, \citet{ma03} and \citet{wenlong_vct15} introduce an auxiliary stress wavefield into the elastodynamic wave equations \citep{virieux84} to obtain a decoupled P-wavefield. However, artifacts are generated along the sharp velocity interfaces of the model \citep{wenlong_cmp15}. 
@@ -105,29 +105,122 @@ The paper is organized as follows: We start by discribing the PS decomposition m
 %the relation between our image condition and dot product image condition is discussed. 
 %The proposed 3D ERTM procedure is successfully tested on a single-layer model and a portion of the SEG/EAGE Overthrust model \citep{aminzadeh94}. 
 \section{Methodology}
-We follow the procedure introduced by \citet{zhang10}, we first derive the equations for PS vector decomposition in the wavenumber domain. From the Helmholtz decomposition theory, an elasitc vector wavefield $\boldsymbol{U}$ can be decomposed into a curl-free P-wave ($\boldsymbol{U}^P$) and a divergence-free S-wave ($\boldsymbol{U}^S$) \citep{aki80}:
+%We follow the procedure introduced by \citet{zhang10}, and first derive the equations for PS vector decomposition in the wavenumber domain. From the Helmholtz decomposition theory, an elasitc vector wavefield $\boldsymbol{U}$ can be decomposed into a curl-free P-wave ($\boldsymbol{U}^P$) and a divergence-free S-wave ($\boldsymbol{U}^S$) \citep{aki80}:
+%\begin{equation}
+%\boldsymbol{U} = \boldsymbol{U}^P + \boldsymbol{U}^S,
+%\label{eqn:helmholtz}
+%\end{equation}
+%with
+%\begin{equation}
+%\bigtriangledown \times \boldsymbol{U}^P = \boldsymbol{0},
+%\label{eqn:p_space1}
+%\end{equation}
+%and
+%\begin{equation}
+%\bigtriangledown \cdot \boldsymbol{U}^S = 0
+%\label{eqn:s_space1}
+%\end{equation}
+%Applying divergence operators on both sides of equation~\ref{eqn:helmholtz} gives
+%\begin{equation}
+%\bigtriangledown \cdot \boldsymbol{U} =\bigtriangledown \cdot \boldsymbol{U}^P,
+%\label{eqn:p_space2}
+%\end{equation}
+%and applying curl operators on both sides of equation~\ref{eqn:helmholtz} gives
+%\begin{equation}
+%\bigtriangledown \times \boldsymbol{U} = \bigtriangledown \times \boldsymbol{U}^S.
+%\label{eqn:s_space2}
+%\end{equation}
+%In the wavenumber domain, equations~\ref{eqn:helmholtz}-\ref{eqn:s_space2} become
+%\begin{equation}
+%\tilde{\boldsymbol{U}} = \tilde{\boldsymbol{U}}^P + \tilde{\boldsymbol{U}}^S,
+%\label{eqn:helmholtz2}
+%\end{equation}
+%\begin{equation}
+%\boldsymbol{K} \times \tilde{\boldsymbol{U}}^P = \boldsymbol{0},
+%\label{eqn:p_wave1}
+%\end{equation}
+%\begin{equation}
+%\boldsymbol{K} \cdot \tilde{\boldsymbol{U}}^S = 0,
+%\label{eqn:s_wave1}
+%\end{equation}
+%\begin{equation}
+%\boldsymbol{K} \cdot \tilde{\boldsymbol{U}} = \boldsymbol{K} \cdot \tilde{\boldsymbol{U}}^P,
+%\label{eqn:p_wave2}
+%\end{equation}
+%and
+%\begin{equation}
+%\boldsymbol{K} \times \tilde{\boldsymbol{U}} = \boldsymbol{K} \times \tilde{\boldsymbol{U}}^S,
+%\label{eqn:s_wave2}
+%\end{equation}
+%where a tilde over the wavefields indicate wavenumber domain representations, and $\boldsymbol{K}$ is the normalized wavenumber vector, indicating the P-wave polarization direction in isotropic media. 
+%
+%The decomposed P-wave vectors can be obtained by solving for the linear equations formed by \ref{eqn:p_wave1} and \ref{eqn:p_wave2}. A 2D solution is given by
+As indicated by \citet{zhang10}, the P ($\tilde{\boldsymbol{U}}^P$) and S ($\tilde{\boldsymbol{U}}^S$) wave vectors can be decomposed from the coupled wavefield ($\tilde{\boldsymbol{U}}$) using
 \begin{equation}
-\boldsymbol{U} = \boldsymbol{U}^P + \boldsymbol{U}^S,
-\label{eqn:helmholtz}
-\end{equation}
-with 
-\begin{equation}
-\bigtriangledown \times \boldsymbol{U}^P = \boldsymbol{0},
+\tilde{\boldsymbol{U}}^P = \boldsymbol{K} (\boldsymbol{K} \cdot \tilde{\boldsymbol{U}}),
+\label{eqn:p_wave}
 \end{equation}
 and
 \begin{equation}
-\bigtriangledown \cdot \boldsymbol{U}^S = 0.
+\tilde{\boldsymbol{U}}^S =-\boldsymbol{K} \times (\boldsymbol{K} \times \tilde{\boldsymbol{U}}),
+\label{eqn:p_wave}
 \end{equation}
-In the wavenumber domain, equation~\ref{eqn:helmholtz} became
+respectively, and a tilde over the wavefields indicate wavenumber domain representations. $\boldsymbol{K}$ is the normalized wavenumber vector, indicating the P-wave polarization direction in isotropic media.
+
+In two dimensions, the explicit form of the decomposed P-wave vector is written as
 \begin{equation}
-\tilde{\boldsymbol{U}} = \tilde{\boldsymbol{U}}^P + \tilde{\boldsymbol{U}}^S,
-\label{eqn:helmholtz2}
+\tilde{U}^P_x = K^2_x \tilde{U}_x + K_x K_z \tilde{U}_z,
+\label{eqn:p_wave1}
 \end{equation}
+and 
+\begin{equation}
+\tilde{U}^P_z = K^2_z \tilde{U}_z + K_z K_x \tilde{U}_x,
+\label{eqn:p_wave2}
+\end{equation}
+where the subscripts $x$ and $z$ represent $x$ and $z$ components of the wavefields. Similarly, the decomposed S-waves have the form
+\begin{equation}
+\tilde{U}^S_x = K^2_z \tilde{U}_x - K_x K_z \tilde{U}_z,
+\label{eqn:s_wave1}
+\end{equation}
+and 
+\begin{equation}
+\tilde{U}^S_z = K^2_x \tilde{U}_z + K_z K_x \tilde{U}_x,
+\label{eqn:s_wave2}
+\end{equation}
+or equivalently
+\begin{equation}
+\tilde{U}^S_x = \tilde{U}_x - \tilde{U}^P_x,
+\label{eqn:s_wave3}
+\end{equation}
+and 
+\begin{equation}
+\tilde{U}^S_z = \tilde{U}_z - \tilde{U}^P_z.
+\label{eqn:s_wave4}
+\end{equation}
+Thus, only P-wave decomposition is neccessary, as the S-waves can be obtained by a component by component subtraction of the decomposed P-waves from the coupled wavefields in both space and wavenumber domain.
+
+In the space domain, we can write an equivalent expression to equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2}
+\begin{equation}
+U^P_x = L_x [U_x] + L_{xz} [U_z],
+\label{eqn:p_space1}
+\end{equation}
+and 
+\begin{equation}
+U^P_z = L_z [U_z] + L_{xz} [U_x],
+\label{eqn:p_space2}
+\end{equation}
+where $L_x$, $L_z$ and $L_{xz}$ are inverse Fourier transforms of $K^2_x$, $K^2_z$ and $K_xK_z$, respectively. The square brackets represent spatial filtering for the wavefield. The values of $L_x$, $L_z$ and $L_{xz}$ can  be pre-calculated and are stationary across all locations of isotropic wavefields. A 21 by 21 grid example of the $L_x$, $L_z$ and $L_{xz}$ filters are shown in Figure~\ref{fig:filter.eps}.
+
+\plot{filter.eps}{width=1.0\columnwidth}
+{
+A 21 by 21 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
+}
+
 
 
 %The procedure of 3D vector-based source-normalized crosscorrelation ERTM is similar to that of the 2D vector-based excitation amplitude image condition \citep{wenlong_vct15}. In ERTMs, the source wavefield is extrapolated before the receiver wavefield extrapolation. Both elastic wavefield extrapolations involve P- and S-wavefield decompositions. The decomposed P- and S-wave particle-velocities and stresses are used to obtain their propagation directions and reflection polarities. 
 %Due to the different polarizations of PP and PS reflections, their image conditions are also different. 
-In the following subsections, the procedures are explained and illustrated in detail.
+%In the following subsections, the procedures are explained and illustrated in detail.
 
 %\subsection{3D elastic wavefield extrapolation and PS decomposition}
 %
