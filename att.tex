@@ -96,14 +96,6 @@ The paper is organized as follows: We start by discribing the PS decomposition m
 
 
 
-%Different image conditions are applied in ERTMs. Early attempts include the excitation time image condition \citep{chang86}, in which the image time is calculated by raytracing from the source point. The crosscorrelation image condition \citep{claerbout85} remains the standard image condition for acoustic RTMs, but in ERTMs, a component-by-component crosscorrelation causes crosstalk between the unseparated P- and S-waves leads to artifacts which pose difficulties in interpretation. \citet{yan08} apply divergence and curl operators to separate the P- and S-waves before applying the crosscorrelation image condition and demonstrate improvements in image quality. The PS image with curl operators have a polarity reversal problem and needs special treatment \citep{du12} to avoid destructive interference in post-migration stacking.
-
-%Recently, P- and S-wave vector decomposition \citep{ma03,zhang07,wenlong_cmp15,wenlong_pv16,zhu17,wenlong17} is gaining popularity. Vector decomposition preserves the vector information in the input elastic wavefield and retains the same physical magnitude and units, and thus is considered to be more accurate than using divergence and curl operators which change the phase and amplitude of the input wavefield. \citet{wang_cl16} obtain decomposed elastic vectors from a source and receiver wavefield and use a dot product type of crosscorrelation image condition to generate images. The dot product, however, leads to image amplitude changes as a function of the open angle between the incident and reflected (converted) waves, causing difficulties in AVA analysis. \citet{wenlong_vct15,wenlong_3d16} use the signed magnitude ratio to construct images by a 2D (or 3D) excitation amplitude image condition. 
-%This image condition applies Poynting vectors \citep{cerveny01} calculated from decomposed P- and S-waves to obtain angle-domain common-image gathers (ADCIGs). The excitation amplitude image condition features a significant reduction in the source wavefield storage and the I/O burden, but it requires sophisticated improvements to include multipathing \citep{jin15}, which is common in complicated models. In this paper, we extend the vector-based image condition to a more robust source-normalized crosscorrelation type image condition and apply it to 3D ERTMs.
-
-%P- and S-wave vector decomposition is also possible in anisotropic wavefields \citep{cheng14,wenlong17}. However, we limit the scope of this initial elastic paper to isotropic media, as a main goal is the proof of concept. The paper is organized as follows; first the methodology for obtaining decomposed P- and S-wave vectors is described. Then we illustrate the procedure for implementing the 3D vector-based source-normalized crosscorrelation image condition.
-%the relation between our image condition and dot product image condition is discussed. 
-%The proposed 3D ERTM procedure is successfully tested on a single-layer model and a portion of the SEG/EAGE Overthrust model \citep{aminzadeh94}. 
 \section{Methodology}
 %We follow the procedure introduced by \citet{zhang10}, and first derive the equations for PS vector decomposition in the wavenumber domain. From the Helmholtz decomposition theory, an elasitc vector wavefield $\boldsymbol{U}$ can be decomposed into a curl-free P-wave ($\boldsymbol{U}^P$) and a divergence-free S-wave ($\boldsymbol{U}^S$) \citep{aki80}:
 %\begin{equation}
@@ -155,7 +147,7 @@ The paper is organized as follows: We start by discribing the PS decomposition m
 %where a tilde over the wavefields indicate wavenumber domain representations, and $\boldsymbol{K}$ is the normalized wavenumber vector, indicating the P-wave polarization direction in isotropic media. 
 %
 %The decomposed P-wave vectors can be obtained by solving for the linear equations formed by \ref{eqn:p_wave1} and \ref{eqn:p_wave2}. A 2D solution is given by
-As indicated by \citet{zhang10}, the P ($\tilde{\boldsymbol{U}}^P$) and S ($\tilde{\boldsymbol{U}}^S$) wave vectors can be decomposed from the coupled wavefield ($\tilde{\boldsymbol{U}}$) using
+As indicated by \citet{zhang10}, in the wavenumber domain, the P ($\tilde{\boldsymbol{U}}^P$) and S ($\tilde{\boldsymbol{U}}^S$) wave vectors can be decomposed from the coupled wavefield ($\tilde{\boldsymbol{U}}$) using
 \begin{equation}
 \tilde{\boldsymbol{U}}^P = \boldsymbol{K} (\boldsymbol{K} \cdot \tilde{\boldsymbol{U}}),
 \label{eqn:p_wave}
@@ -216,117 +208,39 @@ where $L_x$, $L_z$ and $L_{xz}$ are inverse Fourier transforms of $K^2_x$, $K^2_
 A 21 by 21 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
 }
 
+\section{Operator Properties}
+\indent\indent
+In this section, we discuss the properties of the spatial stationary filter in terms of order, size, accuracy, and computation efficiency. 
 
+\section{Synthetic tests}
+\indent\indent
+In this section, we perform synthetic tests using the proposed PS decomposition algorithm, and compare the results with other methods
 
-%The procedure of 3D vector-based source-normalized crosscorrelation ERTM is similar to that of the 2D vector-based excitation amplitude image condition \citep{wenlong_vct15}. In ERTMs, the source wavefield is extrapolated before the receiver wavefield extrapolation. Both elastic wavefield extrapolations involve P- and S-wavefield decompositions. The decomposed P- and S-wave particle-velocities and stresses are used to obtain their propagation directions and reflection polarities. 
-%Due to the different polarizations of PP and PS reflections, their image conditions are also different. 
-%In the following subsections, the procedures are explained and illustrated in detail.
+The wavefields are extrapolated with an eighth-order in space, second-order in time, stress-particle-velocity, staggered-grid, finite-difference solution \citep{virieux86}. Convolutional perfectly matched layer (CPML) absorbing boundary conditions \citep{komatitsch07} are used on all four boundaries to reduce unwanted reflections.
 
-%\subsection{3D elastic wavefield extrapolation and PS decomposition}
-%
-%We follow the stress-particle-velocity formulation proposed by Madariaga (\citeyear{madariaga76}) and Virieux (\citeyear{virieux84}, \citeyear{virieux86}), which includes the general Hooke's law
-%\begin{subequations}
-%\begin{equation}
-%\frac{\partial\tau_{xx}}{\partial t}=(\lambda+2\mu)(\frac{\partial v_x}{\partial x}+\frac{\partial v_y}{\partial y}+\frac{\partial v_z}{\partial z})-2\mu(\frac{\partial v_y}{\partial y}+\frac{\partial v_z}{\partial z}),
-%\end{equation}
-%\begin{equation}
-%\frac{\partial\tau_{yy}}{\partial t}=(\lambda+2\mu)(\frac{\partial v_x}{\partial x}+\frac{\partial v_y}{\partial y}+\frac{\partial v_z}{\partial z})-2\mu(\frac{\partial v_x}{\partial x}+\frac{\partial v_z}{\partial z}),
-%\end{equation}
-%\begin{equation}
-%\frac{\partial\tau_{zz}}{\partial t}=(\lambda+2\mu)(\frac{\partial v_x}{\partial x}+\frac{\partial v_y}{\partial y}+\frac{\partial v_z}{\partial z})-2\mu(\frac{\partial v_x}{\partial x}+\frac{\partial v_y}{\partial y}),
-%\end{equation}
-%\begin{equation}
-%\frac{\partial\tau_{xy}}{\partial t}=\mu(\frac{\partial v_x}{\partial y}+\frac{\partial v_y}{\partial x}),
-%\end{equation}
-%\begin{equation}
-%\frac{\partial\tau_{xz}}{\partial t}=\mu(\frac{\partial v_x}{\partial z}+\frac{\partial v_z}{\partial x}),
-%\end{equation}
-%\begin{equation}
-%\frac{\partial\tau_{yz}}{\partial t}=\mu(\frac{\partial v_y}{\partial z}+\frac{\partial v_z}{\partial y}), 
-%\end{equation}
-%\label{eqn:stress-velocity1}
-%\end{subequations}
-%and the equations of motion
-%\begin{subequations}
-%\begin{equation}
-%\rho\frac{\partial v_x}{\partial t}=\frac{\partial\tau _{xx}}{\partial x}+\frac{\partial\tau _{xy}}{\partial y}+\frac{\partial\tau _{xz}}{\partial z},
-%\end{equation}
-%\begin{equation}
-%\rho\frac{\partial v_y}{\partial t}=\frac{\partial\tau _{xy}}{\partial x}+\frac{\partial\tau _{yy}}{\partial y}+\frac{\partial\tau _{yz}}{\partial z},
-%\end{equation}
-%%\text{and}
-%\begin{equation}
-%\rho\frac{\partial v_z}{\partial t}=\frac{\partial\tau _{xz}}{\partial x}+\frac{\partial\tau _{yz}}{\partial y}+\frac{\partial\tau _{zz}}{\partial z},
-%\end{equation}
-%\label{eqn:stress-velocity2}
-%\end{subequations}
-%\noindent{where $\tau$ is stress and $v$ is particle-velocity, and the subscripts indicate $x$, $y$ or $z$ coordinates.}
-%
-%%PS decomposition is necessary to get clear PP and PS images free from artifacts. 
-%The above stress-particle-velocity formulation extrapolates 3D isotropic elastic wavefields with coupled P- and S-waves; if they are not separated either before extrapolation, or as part of the image condition, they will be superimposed as 'crosstalk' artifacts in the migrated images. Instead of using curl and divergence, which produce scalar and vector potentials rather than particle vector components \citep{aki80,yan08}, we decompose the wavefields while preserving their vector information. This can be achieved by calculating an auxiliary P-wave stress $\tau^p$, which is a scalar wavefield similar to pressure in the acoustic wave equation, while solving the complete stress-particle-velocity formulation in equations \ref{eqn:stress-velocity1} and \ref{eqn:stress-velocity2}. The calculation for P-wave stress has a scalar form \citep{xiao10} 
-%\begin{equation}
-%\frac{\partial\tau_{p}}{\partial t}=(\lambda+2\mu)(\frac{\partial v_x}{\partial x}+\frac{\partial v_y}{\partial y}+\frac{\partial v_z}{\partial z}).
-%\label{eqn:tau-p}
-%\end{equation}
-%Then the horizontal and vertical particle-velocity components of P-waves, $v^p_{x}$, $v^p_{y}$ and $v^p_{z}$, are calculated from $\tau^p$ by finite differencing
-%\begin{subequations}
-%\begin{equation}
-%\frac{\partial v^p_{x}}{\partial t}=\frac{1}{\rho}\frac{\partial\tau _{p}}{\partial x},
-%\end{equation}
-%\begin{equation}
-%\frac{\partial v^p_{y}}{\partial t}=\frac{1}{\rho}\frac{\partial\tau _{p}}{\partial y},
-%\end{equation}
-%\text{and}
-%\begin{equation}
-%\frac{\partial v^p_{z}}{\partial t}=\frac{1}{\rho}\frac{\partial\tau _{p}}{\partial z}.
-%\end{equation}
-%\label{eqn:vp}
-%\end{subequations}
-%This gives a complete description of the vector P-wavefield; the S-wavefield can be obtained by subtracting the P-wavefield from the complete wavefield, component-by-component
-%\begin{subequations}
-%\begin{equation}
-%v^s_{x}=v_x-v^p_{x},
-%\end{equation}
-%\begin{equation}
-%v^s_{y}=v_y-v^p_{y},
-%\end{equation}
-%\text{and}
-%\begin{equation}
-%v^s_{z}=v_z-v^p_{z},
-%\end{equation}
-%\label{eqn:vs}
-%\end{subequations}
-%where $v^s_x$,  $v^s_y$ and $v^s_z$ are the $x$, $y$ and $z$ direction particle-velocity components of the S-waves. 
-%
-%An example of elastic wavefield decomposition is shown in Figure~\ref{fig:homo_snap.eps}, where a composite (P and S) source is placed at the center of a homogeneous model with propagation velocities vp = 2.5 km/s, vs= 1.6 km/s, and $\rho$ = 2.1 $\mathrm{kg/cm^3}$. The first row are the x, y and z components of the original elastic wavefield snapshot (Figure~\ref{fig:homo_snap.eps}a-\ref{fig:homo_snap.eps}c); the second and the third rows are the corresponding decomposed components of the P (Figure~\ref{fig:homo_snap.eps}d-\ref{fig:homo_snap.eps}f) and the S (Figure~\ref{fig:homo_snap.eps}g-\ref{fig:homo_snap.eps}i) waves with vector components preserved. 
-%\plot{homo_snap.eps}{width=1.0\columnwidth}
-%{
-%An elastic wavefield decomposition example in a homogeneous model.
-%(a)-(c) are the X, Y and Z components of the original particle-velocity components;
-%(d)-(f) are the X, Y and Z components of the decomposed P-wave particle-velocity components;
-%(g)-(i) are the X, Y and Z components of the decomposed S-wave particle-velocity components;
-%}
+Three PS decomposition algorithms are tested: the decoupled propagation (DP), proposed by \citet{ma03}, the wavenumber domain decomposition (WD) by \citet{zhang10}, and the proposed stationary filter decomposition (SF). 
 
-
-
-
-\section{Synthetic Tests}
+The first test is performed on an isotropic homogeneous model with $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.5 $\mathrm{g/cm^3}$. The model has 10 m grid spacing in the x- and z-directions. A composite source that generates both P- and S-waves are placed at the center of the model. A Ricker wavelet with a dominant frequency of 10 Hz is used in this example. A snapshot of the x and z particle velocity components at t = 0.34 s is shown in Figure~\ref{fig:homo_snap.eps}
+\plot{homo_snap.eps}{width=1.0\columnwidth}
+{
+(a) The horizontal and (b) vertical component particle velocities in a homogeneous model.
+}
+The decomposed P- and S-waves using DP, WD and FS methods are shown in Figure~\ref{fig:homo_cmp.eps}
+\plot{homo_cmp.eps}{width=1.0\columnwidth}
+{
+The PS decomposition results using DP (a), WD (b) and FS (c).
+}
+As in decomposition algorithms, the S-waves can be obtained by subtracting P-waves from the coupled wavefields component by component, so ...
 
 
 \section{Discussion}
+\indent\indent
+The idea of using spatial filers for PS decomposition can be extended to anisottopic media. Unlike isotropic wavefields, in anisotrpic wavefields, the polarization directions of P- and S-waves depends on the model parameters, which makes the spatial filters unstationary across different positions within the model. 
 
-The proposed vector-based source-normalized crosscorrelation image condition has several important differences from the source-normalized crosscorrelation image condition in acoustic RTMs \citep{kaelin06}. First, the magnitudes of the elastic particle-velocity vectors are used instead of amplitudes in acoustic wavefields. Second, for acoustic RTMs, only a single component amplitude needs to be stored during the source wavefield extrapolation, while in vector-based image condition for elastic RTM, all the P-wave particle-velocity and stress components are required at each grid point to build the final image. Third, because the magnitudes of the particle-velocity vectors are always positive, to get accurate reflectivity information, signs of the reflections (both PP and PS) need to be determined as a part of the image condition. The output of the vector-based image condition contains approximate angle-dependent reflectivity information; to increase the accuracy of the reflectivity, compensations for transmission and attenuation losses \citep{deng07,deng08} are also necessary.
-
-In the above examples, we store the source wavefield in disk as the models are small. However, for big 3D models, the wavefield storage and I/O burden may become costly. One solution is to store the boundaries or checkpoints during the source wavefield extrapolation \citep{bao15}, and reconstruct the source wavefield during the receiver wavefield extrapolation.
-
-Compared with the excitation type image condition \citep{wenlong_vct15,wenlong_3d16}, the crosscorrelation type image condition involves substantially more wavefield storage and a large I/O burden, and thus is more computationally expensive; the main benefit is that multipathing can be handled efficiently and correctly.
-
-The proposed image condition uses the relation between P- and S-wave directions and their corresponding polarization directions, which is valid in isotropic media. In anisotropic media, the relation is more complicated, and an extension of this image condition to anisotropic ERTM needs further investigations.
 
 
 \section{Conclusions}
 
-A vector-based source-normalized crosscorrelation image condition is proposed and implemented in 3D ERTMs. P- and S-waves are decomposed in the vector domain during both source and receiver wavefield extrapolation. Propagation directions for P- and S-waves are efficiently calculated using Poynting vectors with the decomposed P- and S-wave vectors as input, and make the process of generating ADCIGs much cheaper compared with other existing methods that involve extracting propagation directions from wavefronts. 
 
 
 \section{Acknowledgments}
