@@ -201,9 +201,24 @@ and
 U^P_z = L_z [U_z] + L_{xz} [U_x],
 \label{eqn:p_space2}
 \end{equation}
-where $L_x$, $L_z$ and $L_{xz}$ are inverse Fourier transforms of $K^2_x$, $K^2_z$ and $K_xK_z$, respectively. The square brackets represent spatial filtering for the wavefield. The values of $L_x$, $L_z$ and $L_{xz}$ can  be pre-calculated and are stationary across all locations of isotropic wavefields. A 21 by 21 grid example of the $L_x$, $L_z$ and $L_{xz}$ filters are shown in Figure~\ref{fig:filter.eps}.
+where $L_x$, $L_z$ and $L_{xz}$ are stationary filters that are designed to decompose the elastic wavefields, and they are calculated by inverse Fourier transforms of $K^2_x$, $K^2_z$ and $K_xK_z$, respectively. The square brackets represent spatial filtering for the wavefield. 
+PS decomposition of isotropic wavefields depends only on the polarization directions of P- and S-waves, which have a predetermined relation with wavenumbers, and don't change with model parameters ($V_P$, $V_S$ or $\rho$). 
+Thus, the values of filters can be pre-calculated, and only three filters ($L_x$, $L_z$ and $L_{xz}$) need to be stored. The filters can be applied to all grid points in the medium and decompose the wavefields at any time step during wavefield extrapolations. 
 
-\plot{filter.eps}{width=1.0\columnwidth}
+The construction of the stationary filters can follow \citet{yan09}, which gives the procedure to transform wavenumber domain operators to space domain filters at different orders of accuracy, and demonstrated that higher orders give better approximations to the wavenumber domain operators. In this paper, we use an uniform eighth order approximations to construct the space domain filters. 
+
+%the  are stationary across all locations of isotropic wavefields. 
+The $L_x$, $L_z$ and $L_{xz}$ filters of size 9 $\times$ 9, 15 $\times$ 15, 21 $\times$ 21, are shown in Figures~\ref{fig:filter9.eps}, \ref{fig:filter15.eps} and \ref{fig:filter21.eps}, respectively.
+
+\plot{filter9.eps}{width=1.0\columnwidth}
+{
+A 9 by 9 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
+}
+\plot{filter15.eps}{width=1.0\columnwidth}
+{
+A 15 by 15 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
+}
+\plot{filter21.eps}{width=1.0\columnwidth}
 {
 A 21 by 21 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
 }
@@ -211,6 +226,10 @@ A 21 by 21 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, re
 \section{Operator Properties}
 \indent\indent
 In this section, we discuss the properties of the spatial stationary filter in terms of order, size, accuracy, and computation efficiency. 
+
+As indicated by \citet{yan09}, the size of the spatial filter has an influence on the accuracy of wavefield decomposition. 
+
+In this section, three set of spatial filters with different sizes are tested and compared in a homogeneous model. 
 
 \section{Synthetic tests}
 \indent\indent
