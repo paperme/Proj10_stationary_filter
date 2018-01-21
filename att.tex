@@ -96,7 +96,7 @@ The paper is organized as follows: We start by discribing the PS decomposition m
 
 
 
-\section{Methodology}
+\section{PS decomposition}
 %We follow the procedure introduced by \citet{zhang10}, and first derive the equations for PS vector decomposition in the wavenumber domain. From the Helmholtz decomposition theory, an elasitc vector wavefield $\boldsymbol{U}$ can be decomposed into a curl-free P-wave ($\boldsymbol{U}^P$) and a divergence-free S-wave ($\boldsymbol{U}^S$) \citep{aki80}:
 %\begin{equation}
 %\boldsymbol{U} = \boldsymbol{U}^P + \boldsymbol{U}^S,
@@ -191,7 +191,14 @@ and
 \end{equation}
 Thus, only P-wave decomposition is neccessary, as the S-waves can be obtained by a component by component subtraction of the decomposed P-waves from the coupled wavefields in both space and wavenumber domain.
 
-In the space domain, we can write an equivalent expression to equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2}
+\section{Space domain stationary filters}
+\indent\indent
+In equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2}, three wavenumber multipliers $K^2_x$, $K^2_z$ and $K_xK_z$ are involved, which are plotted in Figure~\ref{fig:K_filter.eps}a-c, respectively. 
+\plot{K_filter.eps}{width=1.0\columnwidth}
+{
+Wavenumber domain multiplier $K^2_x$ (a), $K^2_z$ (b) and $K_xK_z$ (c) for isotropic P- and S-wave decomposition.
+}
+Those wavenumber domain multipliers can be transformed to the space domain as filters. Thus, in the space domain, we can write equivalent expressions to equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2} as
 \begin{equation}
 U^P_x = L_x [U_x] + L_{xz} [U_z],
 \label{eqn:p_space1}
@@ -201,36 +208,51 @@ and
 U^P_z = L_z [U_z] + L_{xz} [U_x],
 \label{eqn:p_space2}
 \end{equation}
-where $L_x$, $L_z$ and $L_{xz}$ are stationary filters that are designed to decompose the elastic wavefields, and they are calculated by inverse Fourier transforms of $K^2_x$, $K^2_z$ and $K_xK_z$, respectively. The square brackets represent spatial filtering for the wavefield. 
+where $L_x$, $L_z$ and $L_{xz}$ are the stationary filters that are designed to decompose the elastic wavefields, and they are calculated by inverse Fourier transforms of $K^2_x$, $K^2_z$ and $K_xK_z$ (Figure~\ref{fig:K_filter.eps}a-c), respectively. The square brackets represent spatial filtering for the wavefield. 
+
 PS decomposition of isotropic wavefields depends only on the polarization directions of P- and S-waves, which have a predetermined relation with wavenumbers, and don't change with model parameters ($V_P$, $V_S$ or $\rho$). 
 Thus, the values of filters can be pre-calculated, and only three filters ($L_x$, $L_z$ and $L_{xz}$) need to be stored. The filters can be applied to all grid points in the medium and decompose the wavefields at any time step during wavefield extrapolations. 
 
-The construction of the stationary filters can follow \citet{yan09}, which gives the procedure to transform wavenumber domain operators to space domain filters at different orders of accuracy, and demonstrated that higher orders give better approximations to the wavenumber domain operators. In this paper, we use an uniform eighth order approximations to construct the space domain filters. 
+A full representation of the wavenumber domain multipliers are infinitely large 2D patches in the space domain. To limit the size of the filters, we follow the strategy of \citet{yan09}, which gives the procedure to transform wavenumber domain operators to the space domain, and evaluates operators at different orders of accuracy. 
+%and demonstrated that higher orders give better approximations to the wavenumber domain operators. 
+In this paper, we use an uniform eighth order approximations to construct the space domain filters. 
 
 %the  are stationary across all locations of isotropic wavefields. 
-The $L_x$, $L_z$ and $L_{xz}$ filters of size 9 $\times$ 9, 15 $\times$ 15, 21 $\times$ 21, are shown in Figures~\ref{fig:filter9.eps}, \ref{fig:filter15.eps} and \ref{fig:filter21.eps}, respectively.
-
-\plot{filter9.eps}{width=1.0\columnwidth}
+A set of pre-calculated $L_x$, $L_z$ and $L_{xz}$ filters are shown in Figures~\ref{fig:filter.eps}a-c. The filters are not as compact, as a result of the wavenumber normalization, which is a deconvolution operator in the space domain. The size of the filters in Figure~\ref{fig:filter.eps} are 51 $\times$ 51, and can be truncated to smaller sizes to improve computational efficiency, but smaller spatial filters lead to lower decomposition accuracy. 
+\plot{filter.eps}{width=1.0\columnwidth}
 {
-A 9 by 9 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
-}
-\plot{filter15.eps}{width=1.0\columnwidth}
-{
-A 15 by 15 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
-}
-\plot{filter21.eps}{width=1.0\columnwidth}
-{
-A 21 by 21 grid example of the $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) filters, respectively.
+Eighth-order $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) stationary filters. The boxes from inside to outside show the truncation of the size of filters to 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 for the whole filter (with no truncation).
 }
 
-\section{Operator Properties}
-\indent\indent
-In this section, we discuss the properties of the spatial stationary filter in terms of order, size, accuracy, and computation efficiency. 
+Below, three set of spatial filters of the size 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are tested and compared in an elastic wavefield. The model is an isotropic homogeneous model with $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.5 $\mathrm{g/cm^3}$. The model has 10 m grid spacing in the x- and z-directions. A composite source that generates both P- and S-waves are placed at the center of the model. A Ricker wavelet with a dominant frequency of 10 Hz is used in this example. A snapshot of the x and z particle velocity components at t = 0.34 s is shown in Figure~\ref{fig:homo_snap.eps}
+\plot{homo_snap.eps}{width=1.0\columnwidth}
+{
+(a) The horizontal and (b) vertical component particle velocities in a homogeneous model recorded at time t = 0.34 s.
+}
 
-As indicated by \citet{yan09}, the size of the spatial filter has an influence on the accuracy of wavefield decomposition. 
+The decomposed P- and S-waves using stationary filters of sizes 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are shown in Figure~\ref{fig:homo_size_cmp.eps}. As the S-waves are obtained by subtracting decomposed P-waves from the coupled wavefields, it is easy to see the P-wave residuals in the S-wave pannels, as a result of inadequate filter sizes.
+\plot{homo_size_cmp.eps}{width=1.0\columnwidth}
+{
+The PS decomposition results using stationary filters of sizes 9 $\times$ 9 (a), 21 $\times$ 21 (b) and 51 $\times$ 51 (c), respectively. For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves.
+}
+  
+We analyze the accuracy of PS decomposition results with different sizes of stationary filters by comparing the residuals between their correspondingly decomposed P-waves and a pure P-wavefield generated with an explosive source at the same time step. The generated P-wave snapshot is shown in Figure~\ref{fig:homo_p_snap.eps}. 
+The residuals are plotted as green bars in Figure~\ref{fig:snap_resi_time.eps}, and their corresponding computational time per decomposition are plotted as red bars. The comparison shows that larger filter size gives better decomposition results, but is more computationally expensive.
+\plot{homo_p_snap.eps}{width=1.0\columnwidth}
+{
+(a) The horizontal and (b) vertical component particle velocities of the P-wave generated from a explosive source, and recorded at the same time step as in Figure~\ref{fig:homo_snap.eps}.
+}
+\plot{snap_resi_time.eps}{width=1.0\columnwidth}
+{
+The P-wave residuals (green bars) from different filter sizes between the decomposed P-wave and the pure P-waves (Figure~\ref{fig:homo_p_snap.eps}), and their corresponding computational time (red bars) per decomposition.
+}
 
-In this section, three set of spatial filters with different sizes are tested and compared in a homogeneous model. 
-
+%\section{Operator Properties}
+%\indent\indent
+%%In this section, we discuss the properties of the spatial stationary filter in terms of order, size, accuracy, and computation efficiency. 
+%
+%As indicated by \citet{yan09}, the size of the spatial filter has an influence on the accuracy of wavefield decomposition. In this section, three set of spatial filters the size 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are tested and compared in a homogeneous model. 
+%
 \section{Synthetic tests}
 \indent\indent
 In this section, we perform synthetic tests using the proposed PS decomposition algorithm, and compare the results with other methods
@@ -240,15 +262,15 @@ The wavefields are extrapolated with an eighth-order in space, second-order in t
 Three PS decomposition algorithms are tested: the decoupled propagation (DP), proposed by \citet{ma03}, the wavenumber domain decomposition (WD) by \citet{zhang10}, and the proposed stationary filter decomposition (SF). 
 
 The first test is performed on an isotropic homogeneous model with $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.5 $\mathrm{g/cm^3}$. The model has 10 m grid spacing in the x- and z-directions. A composite source that generates both P- and S-waves are placed at the center of the model. A Ricker wavelet with a dominant frequency of 10 Hz is used in this example. A snapshot of the x and z particle velocity components at t = 0.34 s is shown in Figure~\ref{fig:homo_snap.eps}
-\plot{homo_snap.eps}{width=1.0\columnwidth}
-{
-(a) The horizontal and (b) vertical component particle velocities in a homogeneous model.
-}
-The decomposed P- and S-waves using DP, WD and FS methods are shown in Figure~\ref{fig:homo_cmp.eps}
-\plot{homo_cmp.eps}{width=1.0\columnwidth}
-{
-The PS decomposition results using DP (a), WD (b) and FS (c).
-}
+%\plot{homo_snap.eps}{width=1.0\columnwidth}
+%{
+%(a) The horizontal and (b) vertical component particle velocities in a homogeneous model.
+%}
+%The decomposed P- and S-waves using DP, WD and FS methods are shown in Figure~\ref{fig:homo_cmp.eps}
+%\plot{homo_cmp.eps}{width=1.0\columnwidth}
+%{
+%The PS decomposition results using DP (a), WD (b) and FS (c).
+%}
 As in decomposition algorithms, the S-waves can be obtained by subtracting P-waves from the coupled wavefields component by component, so ...
 
 
