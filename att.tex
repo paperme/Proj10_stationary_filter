@@ -262,7 +262,7 @@ The wavefields are extrapolated with an eighth-order in space, second-order in t
 Besides the proposed stationary filter, the other two PS decomposition algorithms for comparisons are the decoupled propagation (DP), proposed by \citet{ma03}, the wavenumber domain decomposition (WD) by \citet{zhang10}. For the SF method, we use a uniform filter size of 21 $\times$ 21 for all the following tests.
 
 The first test is performed on an isotropic two-layer model with $V_P$ = 3 km/s, $V_S$ =2.1 km/s, and $\rho$ = 2.2 $\mathrm{g/cm^3}$ for the upper layer, and $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.4 $\mathrm{g/cm^3}$ for the lower layer. 
-The model has 10 m grid spacing in the x- and z-directions. An explosive source with a 10 Hz Ricker wavelet is placed at (x, z) = (0.64, 0.9) km. A snapshot of the x and z particle velocity components at t = 0.42 s is shown in Figure~\ref{fig:layer_snap.eps}.
+The model has 10 m grid spacing in the x- and z-directions. An explosive source with a 10 Hz Ricker wavelet is placed at (x, z) = (1.28, 0.9) km. A snapshot of the x and z particle velocity components at t = 0.42 s is shown in Figure~\ref{fig:layer_snap.eps}.
 \plot{layer_snap.eps}{width=1.0\columnwidth}
 {
 (a) The horizontal and (b) vertical component particle velocities in the two-layer model at t = 0.42 s.
@@ -287,6 +287,24 @@ The computational times of SF, DP and WD are 1.97 s, 0.01 s and 0.20 s, respecti
 %\end{tabular}
 %}
 
+The second test is performed on a portion of the modified Sigsbee model \citep{paffenholz02}. The original model has only P-wave velocity (Figure~\ref{fig:sigsbee_model.eps}a). We replace water layer into solid and the S-wave velocity and density are approximated from the P-wave velocity and are shown in Figures~\ref{fig:sigsbee_model.eps}b and Figures~\ref{fig:sigsbee_model.eps}c.
+The model has 10 m grid spacing in both x- and z-directions. An explosive source with a 15 Hz Ricker wavelet is placed at (x, z) = (1.28, 0.16) km. A snapshot of the x and z particle velocity components at t = 0.9 s is shown in Figure~\ref{fig:sigsbee_snap.eps}.
+
+\plot{sigsbee_model.eps}{width=0.7\textwidth}
+{
+The P-wave velocity (a), S-wave velocity (b) and density (c) of the modified Sigsbee model. 
+}
+\plot{sigsbee_snap.eps}{width=1.0\columnwidth}
+{
+(a) The horizontal and (b) vertical component particle velocities in the Sigsbee model at t = 0.9 s.
+}
+
+Again, we decompose the coupled wavefields in Figure~\ref{fig:sigsbee_snap.eps} using SF, DP and WD methods, and the results are shown in Figures~\ref{fig:sigsbee_cmp.eps}a-c, respectively. Results of DP contain artifacts along the salt boundary, because the true velocity model is used for forward modeling. The SF and WD methods give similar results and don't have artifacts along velocity interfaces. 
+
+\plot{sigsbee_cmp.eps}{width=1.0\columnwidth}
+{
+The PS decomposition results of the Sigsbee model (Figure~\ref{fig:sigsbee_model.eps}) using SF (a), DP (b) and WD (c). For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves.
+}
 
 
 \section{Discussion}
