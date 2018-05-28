@@ -52,37 +52,37 @@ The University of Texas at Dallas, \\
 
 \begin{abstract}
 
-P and S wavefields separation or decomposition is essential for generating PP and PS images in elastic reverse time migrations (ERTMs). Traditionally used divergence and curl operators introduce amplitude and phase change of the input elastic wavefield. We propose a novel space domain stationary filter for P- and S-wave vector decomposition. The decomposed P- and S-waves have the same phase and amplitude with the original elastic wavefield. 
-We find that the accuracy of PS decomposition increases with the size of the stationary filters, but the computational cost also increases. The proposed method is compared with two other PS decomposition algorithms, and we conclude that the proposed method doesn't have the artifacts that occur in the decoupled propagation method, but the efficiency is still low due to the large filter size.
+P and S wavefield separation or decomposition is essential for generating PP and PS images in elastic reverse time migrations (ERTMs). The commonly used divergence and curl operators introduce amplitude and phase changes of the input elastic wavefield. We propose a novel space-domain stationary filter for P- and S-wave vector decomposition. The decomposed P- and S-waves have the same phase and amplitude as the input elastic wavefield. 
+The accuracy of the PS decomposition increases with the size of the stationary filters, but the computational cost also increases. The proposed method is compared with two other PS decomposition algorithms, and we conclude that the proposed method doesn't have the artifacts that occur in the decoupled propagation method, but the efficiency is still because of the large filter size.
 
 \end{abstract}
 
 \section{Introduction}
-Traditional seismic migrations apply acoustic wave equations, which simulate only P-wave propagation in the earth. However, the existence of S-waves in the recordings may bring artifacts to the migrated images, 
-especially for large offset seismic data, in which the S-waves have comparable amplitudes with the P-waves.
+Traditional seismic migrations apply acoustic wave extrapolations, which simulate only P-wave propagation in the earth. However, the existence of S-waves in the recordings will result in crosstalk artifacts in the migrated images, 
+especially for large offset seismic data, in which the S-waves have amplitudes comparable to the P-waves.
 %because the acoustic wave equation cannot handle both wave modes simultaneously. 
-Moreover, the S-waves also carry valuable information from subsurface and enable better analysis of the reservoirs. S-waves are also useful for detecting gas clouds and fractures, where the P-waves are strongly attenuated \citep{li98, knapp01}.
+Moreover, the S-waves also carry valuable information from subsurface that enable more complete analysis of the reservoirs. S-waves are also useful for detecting gas clouds and fractures, where the P-waves are strongly attenuated \citep{li98, knapp01}.
 
 %Elastodynamic wave equations can simulate seismic wave propagation with fewer assumptions than acoustic wave equations, as the former include both shear- and compressional wave propagations. 3D elastic migration, with multicomponent data as input, provides the foundation for structure imaging and elastic parameter estimation.
 
-One category for migrating the multicomponent data is the ray-based methods. Examples include Kirchhoff migration \citep{kuo84, dai86, hokstad00}.
+One approach to migrating multicomponent data is the ray-based methods. Examples include Kirchhoff migration \citep{kuo84, dai86, hokstad00}.
 %where the P- and S-wave traveltime tables are obtained from ray-tracing, and images are built by summing the amplitudes along their corresponding traveltimes. In this process, the PS separation is implicit by using P- and S-velocity models separately for ray-tracing. 
 %The limitations of elastic Kirchhoff migration is the same with those of acoustic Kirchhoff migrations; high frequency assumption makes the ray theory unable to dully describe the wave phenomena especially for complicated models \citep{gray01}. 
 Ray-based methods are efficient, but high frequency assumption makes the ray theory unable to fully describe the wave phenomena especially for complicated models \citep{gray01}.
-Another category is the wave equations based solutions \citep{chang86,chang94,whitmore95}, which reconstruct the full elastic wavefields from boundary conditions \citep{wapenaar90}. 
+Another category is the wave-equations based solutions \citep{chang86,chang94,whitmore95}, which reconstruct the full elastic wavefields from boundary conditions \citep{wapenaar90}. 
 %Elastic wave equations directly use multicomponent data as boundary conditions and reconstruct the elastic wavefield. 
-However, P- and S-waves are coupled in the elastic wavefield. Failure to separate the P- and S-waves leads to crosstalk artifacts in the migrated images \citep{yan08}. Thus, the quality of PS separation has direct influences on the migrated images. 
+However, P- and S-waves are coupled in the elastic wavefield. Failure to separate the P- and S-waves leads to crosstalk artifacts in the migrated images \citep{yan08}. Thus, the quality of PS separation directly influences the migrated images. 
 
 %\citet{sun01} separate multicomponent data near the surface and use acoustic equations for separate PP and PS migrations. \citet{yan08} propose to use elastic wave equations for both source and receiver extrapolations and separate the P- and S-waves by divergence and curl operators before applying the image condition. 
-The pervasively applied PS separation method is the divergence and curl operators, which are based on Helmholtz decomposition \citep{aki80} and is highly efficient. However, as pointed out by \citet{sun01}, the phase and amplitude of the separated P- and S-wave are changed by the divergence and curl operators, causing problems for true amplitude imaging and interpretations.
-\citet{zhang10} propose to decompose the wavefield into P- and S-wave vectors to preserve their original amplitudes and phases and call it wavefield decomposition to be differentiated from wavefield separation algorithms which involve divergence and curl and similar operators. 
+The most pervasively applied PS separation method is the divergence and curl operators, which are based on Helmholtz decomposition \citep{aki80} which is highly efficient. However, as pointed out by \citet{sun01}, the phase and amplitude of the separated P- and S-wave are changed by the divergence and curl operators, causing problems for true amplitude imaging and interpretations.
+\citet{zhang10} propose to decompose the wavefields into P- and S-wave vectors to preserve their original amplitudes and phases and call it wavefield decomposition to differentiate from wavefield separation algorithms which involve divergence and curl, or similar, operators. 
 
-\citet{zhang10} project wavefields to P- and S-polarization directions. \citet{zhu17} decompose the wavefields by solving a Poisson's equation. Both methods involve Fourier transforms and the decomposition occurs in the wavenumber domain. From another perspective, \citet{ma03} and \citet{wenlong_vct15} introduce an auxiliary stress wavefield into the elastodynamic wave equations \citep{virieux84} to obtain a decoupled P-wavefield. However, artifacts are generated along the sharp velocity interfaces of the model \citep{wenlong_cmp15}. 
+\citet{zhang10} project wavefields to P- and S-polarization directions. \citet{zhu17} decomposes the wavefields by solving a Poisson's equation. Both methods involve Fourier transforms and the decomposition occurs in the wavenumber domain. From another perspective, \citet{ma03} and \citet{wenlong_vct15} introduce an auxiliary stress wavefield into the elastodynamic wave equations \citep{virieux84} to obtain a decoupled P-wavefield. However, artifacts are generated at the sharp velocity interfaces of the model \citep{wenlong_cmp15}. 
 
-PS decomposition in the anisotropic media is also possible \citep{zhang10, cheng14, wenlong18}, but we limit our scope to isotropic media. Inspired by \citet{yan09}, we propose a space domain stationary filter to decompose P- and S-waves, which doesn't need Fourier transforms, and synthetic tests show that the results don't have artifacts along the velocity interfaces.
+PS decomposition in anisotropic media is also possible \citep{zhang10, cheng14, wenlong18}; here we limit our scope to isotropic media. Inspired by \citet{yan09}, we propose a space domain stationary filter to decompose P- and S-waves, which doesn't need Fourier transforms; synthetic tests show that the results have the advantage that they don't have artifacts along the velocity interfaces.
 
 %It's interesting to see that all the PS vector decomposition algorithms are performed in the wavenumber domain, except for the decoupled wave solution. In this paper, we propose a stationary filter to decompose P- and S-wave vectors directly in the space domain, no need of Fourier transforms. 
-The paper is organized as follows: We start by describing the PS decomposition methodology in the wavenumber domain. Then the space domain approximations of the operators are presented. Next, the proposed algorithm is tested and compared with results from wavenumber domain decomposition \citep{zhang10} and decoupled equations \citep{ma03, wenlong_cmp15}. 
+The paper is organized as follows. We start by describing the PS decomposition methodology in the wavenumber domain. Then the space domain approximations of the operators are derived. Next, the proposed algorithm is tested and compared with results from wavenumber domain decomposition \citep{zhang10} and decoupled equations \citep{ma03, wenlong_cmp15}. 
 %Finally, several ERTMs are performed with synthetic data using the proposed algorithm for PS decomposition.
 %-------------------------------------------------
 
@@ -90,7 +90,7 @@ The paper is organized as follows: We start by describing the PS decomposition m
 
 \section{PS decomposition}
 
-As indicated by \citet{zhang10}, in the wavenumber domain, the P ($\tilde{\boldsymbol{U}}^P$) and S ($\tilde{\boldsymbol{U}}^S$) wave vectors can be decomposed from the coupled wavefield ($\tilde{\boldsymbol{U}}$) using
+As indicated by \citet{zhang10}, in the wavenumber domain, the P ($\tilde{\boldsymbol{U}}^P$) and S ($\tilde{\boldsymbol{U}}^S$) particle velocity vectors can be decomposed from the coupled wavefield ($\tilde{\boldsymbol{U}}$) using
 \begin{equation}
 \tilde{\boldsymbol{U}}^P = \boldsymbol{K} (\boldsymbol{K} \cdot \tilde{\boldsymbol{U}}),
 \label{eqn:p_wave}
@@ -100,7 +100,7 @@ and
 \tilde{\boldsymbol{U}}^S =-\boldsymbol{K} \times (\boldsymbol{K} \times \tilde{\boldsymbol{U}}),
 \label{eqn:p_wave}
 \end{equation}
-respectively, and a tilde over the wavefields indicate wavenumber domain representations. $\boldsymbol{K}$ is the normalized wavenumber vector, representing the P-wave polarization direction in isotropic media.
+respectively, where the tilde over the wavefields indicate wavenumber domain representations. $\boldsymbol{K}$ is the normalized wavenumber vector, representing the P-wave polarization direction in isotropic media.
 
 In two dimensions, the explicit form of the decomposed P-wave vector is written as
 \begin{equation}
@@ -112,7 +112,7 @@ and
 \tilde{U}^P_z = K^2_z \tilde{U}_z + K_z K_x \tilde{U}_x,
 \label{eqn:p_wave2}
 \end{equation}
-where the subscripts represent $x$ and $z$ components of the wavefields. Similarly, the decomposed S-waves have the form
+where the subscripts represent the $x$ and $z$ components of the wavefields. Similarly, the decomposed S-waves have the form
 \begin{equation}
 \tilde{U}^S_x = K^2_z \tilde{U}_x - K_x K_z \tilde{U}_z,
 \label{eqn:s_wave1}
@@ -132,12 +132,12 @@ and
 \tilde{U}^S_z = \tilde{U}_z - \tilde{U}^P_z.
 \label{eqn:s_wave4}
 \end{equation}
-Thus, only P-wave decomposition is necessary, as the S-waves can be obtained by a component by component subtraction of the decomposed P-waves from the coupled wavefield in either space or wavenumber domain.
+Thus, only P-wave decomposition is necessary, as the S-waves can be obtained by a component by component subtraction of the decomposed P-waves from the coupled wavefield in either the space or the wavenumber domain.
 
 \section{Space domain stationary filters}
 
 In equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2}, three wavenumber multipliers $K^2_x$, $K^2_z$ and $K_xK_z$ are involved, which are plotted in Figure~\ref{fig:K_filter.eps}a-c, respectively. 
-Those wavenumber domain multipliers can be transformed to the space domain as spatial filters. Thus, in the space domain, we can write equivalent expressions to equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2} as
+Those wavenumber domain multipliers can be transformed into the space domain and can be applied as spatial filters. Thus, in the space domain, we can write equivalent expressions to equations~\ref{eqn:p_wave1} and \ref{eqn:p_wave2} as
 \begin{equation}
 U^P_x = L_x [U_x] + L_{xz} [U_z],
 \label{eqn:p_space1}
@@ -155,7 +155,7 @@ Wavenumber domain multiplier $K^2_x$ (a), $K^2_z$ (b) and $K_xK_z$ (c) for isotr
 }
 
 Unlike the non-stationary filters for PS separations in anisotropic media \citep{yan09}, 
-PS decomposition of isotropic wavefields depends only on the polarization directions of P- and S-waves, which have a predetermined relation with wavenumbers, and don't change with model parameters ($V_P$, $V_S$ or $\rho$). 
+PS decomposition of isotropic elastic wavefields depends only on the polarization directions of the P- and S-waves, which have a predetermined relation with wavenumbers, and don't change with model parameters ($V_P$, $V_S$ or $\rho$). 
 Thus, the values of filters are stationary for all spatial positions and can be pre-calculated. Only three filters ($L_x$, $L_z$ and $L_{xz}$) need to be stored. The filters can be applied to decompose the wavefields at any time step during wavefield extrapolations. 
 
 Full representations of the wavenumber domain multipliers are infinitely large 2D patches in the space domain. To limit the size of the filters, we follow the strategy of \citet{yan09}, which gives the procedure to transform wavenumber domain operators to the space domain and evaluates operators at different orders of accuracy. 
@@ -163,29 +163,29 @@ Full representations of the wavenumber domain multipliers are infinitely large 2
 In this paper, we use a uniform eighth order approximations to construct the space domain filters. 
 
 %the  are stationary across all locations of isotropic wavefields. 
-A set of pre-calculated $L_x$, $L_z$ and $L_{xz}$ filters are shown in Figures~\ref{fig:filter.eps}a-c. The filters are not compact as a result of the wavenumber normalization, which is a deconvolution operator in the space domain. The size of the filters in Figure~\ref{fig:filter.eps} are 51 $\times$ 51, and can be truncated to smaller sizes to improve computational efficiency, but smaller spatial filters lead to lower decomposition accuracy, which is demonstrated in the following example. 
+A set of pre-calculated $L_x$, $L_z$ and $L_{xz}$ filters are shown in Figures~\ref{fig:filter.eps}a-c. The filters are not compact as a result of the wavenumber normalization, which is a deconvolution operator in the space domain. The size of the filters in Figure~\ref{fig:filter.eps} are 51 $\times$ 51, and can be truncated to smaller sizes to improve computational efficiency, but smaller spatial filters lead to lower decomposition accuracy, as demonstrated in the following example. 
 \plot{filter.eps}{width=1.0\columnwidth}
 {
-Eighth-order $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) stationary filters. The boxes on (a) from inside to outside show the truncations of the size of filters to 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 (with no truncation). Same truncations are applied to (b) and (c) but are not plotted.
+Eighth-order $L_x$ (a), $L_z$ (b) and $L_{xz}$ (c) stationary filters. The boxes on (a) from inside to outside show the truncations of the size of filters to 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 (with no truncation). The same truncations are applied to (b) and (c) but are not plotted.
 }
 
-Below, three sets of spatial filters of the size 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are tested and compared by decomposing an elastic wavefield. The 2D model is isotropic homogeneous with $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.5 $\mathrm{g/cm^3}$. The model has 10 m grid spacing in the x- and z-directions. A composite source that generates both P- and S-waves simultaneously are placed at the center. A Ricker wavelet with a dominant frequency of 10 Hz is used in this example. A snapshot of the x and z particle velocity components at t = 0.34 s is shown in Figure~\ref{fig:homo_snap.eps}.
+We first test the spatial filters by decomposing an elastic wavefield. The 2D model is isotropic and homogeneous with $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.5 $\mathrm{g/cm^3}$. The model has 10 m grid spacing in the x- and z-directions. A composite source that generates both P- and S-waves simultaneously is placed at the center of the grid. A Ricker wavelet with a dominant frequency of 10 Hz is used in this example. A snapshot of the x and z particle velocity components at t = 0.34 s is shown in Figure~\ref{fig:homo_snap.eps}.
 \plot{homo_snap.eps}{width=1.0\columnwidth}
 {
-(a) The horizontal and (b) vertical component particle velocities in a homogeneous model recorded at time t = 0.34 s.
+The (a) horizontal and (b) vertical component particle velocities in a homogeneous model recorded at time t = 0.34 s.
 }
 
-The decomposed P- and S-waves using stationary filters of sizes 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are shown in Figure~\ref{fig:homo_size_cmp.eps}. As the S-waves are obtained by subtracting decomposed P-waves from the coupled wavefields, a qualitative way to evaluate the decomposition accuracy by looking at the P-wave residuals in the S-wave pannels, as a result of small filter sizes.
+The decomposed P- and S-waves using stationary filters of sizes 9 $\times$ 9, 21 $\times$ 21 and 51 $\times$ 51 are shown in Figure~\ref{fig:homo_size_cmp.eps}. As the S-waves are obtained by subtracting decomposed P-waves from the coupled wavefields, a qualitative way to evaluate the decomposition accuracy by looking at the P-wave residuals in the S-wave panels, produced as a result of small filter sizes.
 \plot{homo_size_cmp.eps}{width=1.0\columnwidth}
 {
-The PS decomposition results using stationary filters of sizes 9 $\times$ 9 (a), 21 $\times$ 21 (b) and 51 $\times$ 51 (c), respectively. For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves.
+The PS decomposition results using stationary filters of sizes (a) 9 $\times$ 9, (b) 21 $\times$ 21 and (c) 51 $\times$ 51, respectively. For each row, from left to right are the horizontal and vertical components of the P-waves and horizontal and vertical components of the S-waves.
 }
   
 We quantitatively analyze the accuracy of PS decomposition results with different sizes of stationary filters by comparing the residuals between their correspondingly decomposed P-wave and a pure P-wavefield generated with an explosive source at the same time step. The pure P-wave snapshot is shown in Figure~\ref{fig:homo_p_snap.eps}. 
-The residuals are plotted as green bars in Figure~\ref{fig:snap_resi_time.eps}, and their corresponding computational time per decomposition are plotted as red bars. The comparison shows that larger filters give better decomposition results but is more computationally expensive.
+The residuals are plotted as green bars in Figure~\ref{fig:snap_resi_time.eps}, and their corresponding computational time per decomposition are plotted as red bars. The comparison shows that the larger filters give better decomposition results but are computationally more expensive.
 \plot{homo_p_snap.eps}{width=1.0\columnwidth}
 {
-(a) The horizontal and (b) vertical component particle velocities of the P-wave generated from an explosive source, and recorded at the same time step as in Figure~\ref{fig:homo_snap.eps}.
+The (a) horizontal and (b) vertical component particle velocities of the P-wave generated from an explosive source, and recorded at the same time step as in Figure~\ref{fig:homo_snap.eps}.
 }
 \plot{snap_resi_time.eps}{width=1.0\columnwidth}
 {
@@ -200,29 +200,29 @@ The P-wave residuals (green bars) from different filter sizes between the decomp
 %
 \section{Synthetic tests and comparisons}
 
-In this section, we perform synthetic tests on more complicated models using the proposed stationary filter, and we compare the results with other representative methods for PS decompositions. 
+In this section, we perform synthetic tests on more complicated models using the proposed stationary filter (SF), and we compare the results with two other representative methods for PS decompositions. 
 
 The wavefields are extrapolated with an eighth-order in space, second-order in time, stress-particle-velocity, staggered-grid, finite-difference solution \citep{virieux86}. Convolutional perfectly matched layer (CPML) absorbing boundary conditions \citep{komatitsch07} are used on all four boundaries to reduce unwanted reflections. 
 
-Besides the proposed stationary filter, the other two PS decomposition algorithms for comparisons are the decoupled propagation (DP), proposed by \citet{ma03}, the wavenumber domain decomposition (WD) by \citet{zhang10}. For the SF method, we use a uniform filter size of 51 $\times$ 51 for all the following tests. 
+Besides the proposed stationary filter, the other two PS decomposition algorithms used for comparison are the decoupled propagation (DP), proposed by \citet{ma03}, and the wavenumber domain decomposition (WD) by \citet{zhang10}. For the SF method, we use a uniform filter size of 51 $\times$ 51 for all the following tests. 
 
-The SF is a space domain operator with theoretical computational cost $O(N \times S)$, where $N$ is the total number of grid points of the wavefield, and $S$ is the number of grid points of the filter. WD is wavenumber domain operator with theoretical cost $O(N \times logN)$ because of the Fourier transforms. DP involves modification of the elastodynamic wave equation, thus has to be applied from the beginning of the elastic wavefield extrapolation with an extra computational cost of $O(N)$ for each time step, and cannot be used to decompose an arbitrary elastic wavefield snapshot, which poses as a limitation for this method.
+The SF is a space domain operator with theoretical computational cost $O(N \times S)$, where $N$ is the total number of grid points of the wavefield, and $S$ is the number of grid points of the filter. WD is wavenumber domain operator with theoretical cost $O(N \times logN)$ because of the Fourier transforms. DP involves modification of the elastodynamic wave equation, and thus has to be applied from the beginning of the elastic wavefield extrapolation with an extra computational cost of $O(N)$ for each time step, where $N$ is the number of grid points. DP cannot be used to decompose an arbitrary elastic wavefield snapshot, which is a limitation for this method.
 
 The first test is performed on an isotropic two-layer model with $V_P$ = 3 km/s, $V_S$ =2.1 km/s, and $\rho$ = 2.2 $\mathrm{g/cm^3}$ for the upper layer, and $V_P$ = 4 km/s, $V_S$ =2.4 km/s, and $\rho$ = 2.4 $\mathrm{g/cm^3}$ for the lower layer. 
 The model has a 10 m grid spacing in both the x- and z-directions. An explosive source with a 10 Hz Ricker wavelet is placed at (x, z) = (1.28, 0.9) km. A snapshot of the x and z particle velocity components at t = 0.42 s is shown in Figure~\ref{fig:layer_snap.eps}.
 \plot{layer_snap.eps}{width=1.0\columnwidth}
 {
-(a) The horizontal and (b) vertical component particle velocities in the two-layer model at t = 0.42 s.
+The (a) horizontal and (b) vertical component particle velocities in the two-layer model at t = 0.42 s.
 }
 
-The decomposed P- and S-waves using SF, DP and WD methods are shown in Figure~\ref{fig:layer_cmp.eps}. Because there is no way to generate pure P- or S-wave snapthots when conversions occur, we can qualitatively analyze the quality of decomposition by looking at the decomposed snapshots in Figure~\ref{fig:layer_cmp.eps}. There are slight P-wave residuals in the S-wave pannel for the SF method, and the accuracy can be improved by further increasing the size of filters at the cost of efficiency. For the DP method, most of the decompositions are clean, but serious artifacts occur along the velocity interfaces (the green boxes in Figure~\ref{fig:layer_cmp.eps}b), which is also studied by \citet{wenlong_cmp15}, indicating that the DP method can be applied only if the model is smoothed enough. WD method shows the cleanest PS decomposition results. 
+The decomposed P- and S-waves using SF, DP and WD methods are shown in Figure~\ref{fig:layer_cmp.eps}. Because there is no way to generate pure P- or S-wave snapshots when conversions occur, we can qualitatively analyze the quality of decomposition by looking at the decomposed snapshots in Figure~\ref{fig:layer_cmp.eps}. There are slight P-wave residuals in the S-wave panel for the SF method; the accuracy can be improved by further increasing the size of filters at the cost of efficiency. For the DP method, most of the decompositions are clean, but serious artifacts occur along the velocity interfaces (in the green boxes in Figure~\ref{fig:layer_cmp.eps}b), which is also studied by \citet{wenlong_cmp15}, indicating that the DP method can be applied only if the model is sufficiently smooth. The WD method shows the cleanest PS decomposition results. 
 
 \plot{layer_cmp.eps}{width=1.0\columnwidth}
 {
-The PS decomposition results using SF (a), DP (b) and WD (c). For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves. The boxed area in (b) shows the artifact caused by the DP method along the velocity interface.
+The PS decomposition results using (a) SF, (b) DP and (c) WD. For each panel, from left to right are the horizontal and vertical components of the P-waves and the horizontal and vertical components of the S-waves. The boxed area in (b) shows the artifact caused by the DP method along the velocity interface.
 }
 
-In this test, the actual computational times of SF, DP and WD are 1.97 s, 0.01 s and 0.20 s, respectively, per decomposition on the above model. In the DP method, because the decomposition is realized by adding an auxiliary stress, and the decomposition is embeded in the wavefield extrapolation. Thus, the computational time of DP is calculated as the difference of computational times for one time-step extrapolation with and without the auxiliary stress wavefield. DP is the most computational efficiency method for PS decomposition in isotropic media, followed by WD method. SF is ranked least efficient because of the large filters being applied.
+In this test, the actual computational times of SF, DP and WD are 1.97 s, 0.01 s and 0.20 s, respectively, per decomposition on the above model. In the DP method, because the decomposition is realized by adding an auxiliary stress, and the decomposition is embeded in the wavefield extrapolation. Thus, the computational time of DP is calculated as the difference of computational times for one time-step extrapolation with and without the auxiliary stress wavefield. DP is the most computational efficiency method for PS decomposition in isotropic media, followed by WD method. SF is the least efficient because of the large filter being applied.
 %\tabl{cost}{
 %The computational times of using SF, DP and WD methods, respectively, to decompose the P- and S-waves.
 %}{
@@ -235,23 +235,23 @@ In this test, the actual computational times of SF, DP and WD are 1.97 s, 0.01 s
 %\end{tabular}
 %}
 
-The second test is performed on a portion of the modified Sigsbee model \citep{paffenholz02}. The original model has only P-wave velocity (Figure~\ref{fig:sigsbee_model.eps}a). We replace water layer into solid and the S-wave velocity and density are approximated from the P-wave velocity and are shown in Figures~\ref{fig:sigsbee_model.eps}b and Figures~\ref{fig:sigsbee_model.eps}c.
+The second test is performed on a portion of the modified Sigsbee model \citep{paffenholz02}. The original model has only P-wave velocity (Figure~\ref{fig:sigsbee_model.eps}a). We replace the water layer by a solid layer and the S-wave velocity and density are approximated from the P-wave velocity and are shown in Figures~\ref{fig:sigsbee_model.eps}b and c.
 The model has 10 m grid spacing in both x- and z-directions. An explosive source with a 15 Hz Ricker wavelet is placed at (x, z) = (1.28, 0.16) km. A snapshot of the x and z particle velocity components at t = 0.9 s is shown in Figure~\ref{fig:sigsbee_snap.eps}.
 
 \plot{sigsbee_model.eps}{width=0.7\textwidth}
 {
-The P-wave velocity (a), S-wave velocity (b) and density (c) of the modified Sigsbee model. 
+The (a) P-wave velocity, (b) S-wave velocity and (c) density of the modified Sigsbee model. 
 }
 \plot{sigsbee_snap.eps}{width=1.0\columnwidth}
 {
-(a) The horizontal and (b) vertical component particle velocities in the Sigsbee model at t = 0.9 s.
+The (a) horizontal and (b) vertical component particle velocities in the Sigsbee model at t = 0.9 s.
 }
 
-Again, we decompose the coupled wavefields in Figure~\ref{fig:sigsbee_snap.eps} using SF, DP and WD methods, and the results are shown in Figures~\ref{fig:sigsbee_cmp.eps}a-c, respectively. Results of DP contain artifacts along the salt boundary (marked by the black arrows in Figure~\ref{fig:sigsbee_snap.eps}b), because of the large velocity contrast between the salt the sediments. The SF and WD methods give similar results and don't have artifacts along velocity interfaces. 
+Again, we decompose the representative coupled wavefields in Figure~\ref{fig:sigsbee_snap.eps} using the SF, DP and WD methods; the results are shown in Figures~\ref{fig:sigsbee_cmp.eps}a-c, respectively. Results of DP contain artifacts along the salt boundary (marked by the black arrows in Figure~\ref{fig:sigsbee_snap.eps}b), because of the large velocity contrast between the salt and the sediments. The SF and WD methods give similar results and don't have artifacts along the velocity interfaces. 
 
 \plot{sigsbee_cmp.eps}{width=1.0\columnwidth}
 {
-The PS decomposition results of the Sigsbee model (Figure~\ref{fig:sigsbee_model.eps}) using SF (a), DP (b) and WD (c). For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves. The black arrows indicate the artifacts in caused by the velocity contrast in the DP method.
+The PS decomposition results of the Sigsbee model (Figure~\ref{fig:sigsbee_model.eps}) using (a) SF, (b) DP and (c) WD. For each panel, from left to right are the horizontal and vertical components of P-waves and horizontal and vertical components of S-waves. The black arrows indicate the artifacts in caused by the velocity contrast in the DP method.
 }
 
 
@@ -261,19 +261,19 @@ The idea of using spatial filers for PS decomposition can be extended to anisotr
 The proposed stationary filter can be extented to 3D, and the number of filters increases to 6: $K^2_{x}$, $K^2_{y}$, $K^2_{z}$, $K_xK_y$, $K_xK_z$ and $K_yK_z$.
 
 %The stationary filter operates in the space domain, thus is appealing for finite-difference elastic wave solutions, 
-The main reason for the inferior efficiency of the stationary filter compared to other PS decomposition algorithms is that large filter size must be applied. Future researches should concentrate on increase the compactness of the filters. 
+The main reason for the inferior efficiency of the stationary filter compared to other PS decomposition algorithms is that large filter size must be applied. Future researches should concentrate on increasing the compactness of the filters. 
 
 
 \section{Conclusions}
 
-In this paper, we propose a novel space domain stationary filters for PS decomposition in isotropic elastic wavefields. We analyze the accuracy and computational efficiency in terms of filter size, and conclude that large filters improve the decomposition accuracy, but is more computationally expensive than small filters. Comparisons with other PS decomposition algorithms show that the proposed method doesn't have artifacts that occur in decoupled propagation results, but the efficiency is not as good as methods. 
+In this paper, we propose a novel space-domain stationary filter for PS decomposition in isotropic elastic wavefields. We analyze the accuracy and computational efficiency in terms of filter size, and conclude that the new method does not have the artifacts along the velocity interfaces as in the results from decoupled propagation methods. A large filter improves the decomposition accuracy, but is more computationally expensive than a small filter. Comparisons with other PS decomposition algorithms show that the proposed method doesn't have artifacts that occur in decoupled propagation results, but the efficiency is not as good. 
 
 
-\section{Acknowledgments}
-
-The research leading to this paper is supported by the Sponsors of the
-UT-Dallas Geophysical Consortium and the Outstanding Young Talent Program (AUGA5710053217) from the Harbin Institute of Technology. A portion of the computations were done at the Texas Advanced Computing Center. This paper is Contribution No. xxxx
-from the Department of Geosciences at the University of Texas at Dallas.
+%\section{Acknowledgments}
+%
+%The research leading to this paper is supported by the Sponsors of the
+%UT-Dallas Geophysical Consortium and the Outstanding Young Talent Program (AUGA5710053217) from the Harbin Institute of Technology. A portion of the computations were done at the Texas Advanced Computing Center. This paper is Contribution No. xxxx
+%from the Department of Geosciences at the University of Texas at Dallas.
 
 
 
